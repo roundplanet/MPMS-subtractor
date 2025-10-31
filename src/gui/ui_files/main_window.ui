@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QMainWindow" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1010</width>
+    <height>676</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>MainWindow</string>
+  </property>
+  <widget class="QWidget" name="centralwidget">
+   <layout class="QVBoxLayout" name="verticalLayout">
+    <item>
+     <widget class="QMdiArea" name="mdiArea"/>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QMenuBar" name="menubar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1010</width>
+     <height>21</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionOpen"/>
+   </widget>
+   <widget class="QMenu" name="menuPlot">
+    <property name="title">
+     <string>Plot</string>
+    </property>
+    <addaction name="actionMultiple"/>
+   </widget>
+   <widget class="QMenu" name="menuConvert">
+    <property name="title">
+     <string>Convert</string>
+    </property>
+    <addaction name="action_convert_scans"/>
+    <addaction name="action_He3_rw_dat_rw_dat"/>
+   </widget>
+   <widget class="QMenu" name="menuTools">
+    <property name="title">
+     <string>Windows</string>
+    </property>
+    <addaction name="actionclose_all"/>
+    <addaction name="actionminimize_all"/>
+    <addaction name="actioncascade"/>
+    <addaction name="actiontile"/>
+   </widget>
+   <widget class="QMenu" name="menuConstants">
+    <property name="title">
+     <string>Constants</string>
+    </property>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuPlot"/>
+   <addaction name="menuConvert"/>
+   <addaction name="menuTools"/>
+   <addaction name="menuConstants"/>
+  </widget>
+  <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionOpen">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="checked">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>open</string>
+   </property>
+  </action>
+  <action name="actionNew">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>new</string>
+   </property>
+  </action>
+  <action name="actionMultiple">
+   <property name="checkable">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string>multiple</string>
+   </property>
+  </action>
+  <action name="actionExport">
+   <property name="text">
+    <string>export</string>
+   </property>
+  </action>
+  <action name="action_convert_scans">
+   <property name="text">
+    <string>.scans.rw.dat -&gt; rw.dat</string>
+   </property>
+  </action>
+  <action name="actionclose_all">
+   <property name="text">
+    <string>close</string>
+   </property>
+  </action>
+  <action name="actionminimize_all">
+   <property name="text">
+    <string>minimize</string>
+   </property>
+  </action>
+  <action name="actioncascade">
+   <property name="text">
+    <string>cascade</string>
+   </property>
+  </action>
+  <action name="actiontile">
+   <property name="text">
+    <string>tile</string>
+   </property>
+  </action>
+  <action name="action_He3_rw_dat_rw_dat">
+   <property name="text">
+    <string>He3 rw.dat -&gt; rw.dat</string>
+   </property>
+  </action>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>
