@@ -139,15 +139,34 @@ class FileCollapsibleWidget(QWidget):
             file.write("INFO,{},SAMPLE_HOLDER_DETAIL\n".format(str(self.measurement.sample_rdf.sample_holder_detail)))
             file.write("INFO,{},SAMPLE_OFFSET\n".format(str(self.measurement.sample_rdf.sample_offset)))
             file.write("[Data]\n")
-            file.write("Time Stamp (sec),Temperature (K),Magnetic Field (Oe), DC Moment Fixed Ctr (emu),DC Moment Err Fixed Ctr (emu),DC Moment Free Ctr (emu),DC Moment Err Free Ctr (emu)\n")
-            for mdp in self.measurement:
-                file.write(",".join([str(np.mean(mdp.sample_rdp.timestamp)),
-                                     str(mdp.sample_rdp.temperature),
-                                     str(mdp.sample_rdp.field),
-                                     str(mdp.datapoint_result["moment_fixed_ctr"]),
-                                     str(mdp.datapoint_result["moment_fixed_ctr_err"]),
-                                     str(mdp.datapoint_result["moment"]),
-                                     str(mdp.datapoint_result["moment_err"]),]) + "\n")
+            file.write("Time Stamp (sec),Temperature (K),Magnetic Field (Oe)," \
+                       "DC Moment Fixed Ctr (emu),DC Moment Err Fixed Ctr (emu),DC Moment Fixed Ctr avg (emu),DC Moment Err Fixed Ctr avg (emu)," \
+                       "DC Moment Free Ctr (emu), DC Moment Err Free Ctr (emu),DC Moment Free Ctr avg (emu), DC Moment Err Free Ctr avg (emu)\n")
+            for mdp1, mdp2 in zip(self.measurement, self.measurement[1:] + [None]):
+                if mdp2 is not None and mdp1.sample_rdp.temperature == mdp2.sample_rdp.temperature and mdp1.sample_rdp.field == mdp2.sample_rdp.field:
+                    file.write(",".join([str(np.mean(mdp1.sample_rdp.timestamp)),
+                                         str(mdp1.sample_rdp.temperature),
+                                         str(mdp1.sample_rdp.field),
+                                         str(mdp1.datapoint_result["moment_fixed_ctr"]),
+                                         str(mdp1.datapoint_result["moment_fixed_ctr_err"]),
+                                         str(np.mean([mdp1.datapoint_result["moment_fixed_ctr"], mdp2.datapoint_result["moment_fixed_ctr"]])),
+                                         str(0.5*np.sqrt(mdp1.datapoint_result["moment_fixed_ctr_err"]**2 + mdp2.datapoint_result["moment_fixed_ctr_err"]**2)),
+                                         str(mdp1.datapoint_result["moment"]),
+                                         str(mdp1.datapoint_result["moment_err"]),
+                                         str(np.mean([mdp1.datapoint_result["moment"], mdp2.datapoint_result["moment"]])),
+                                         str(0.5*np.sqrt(mdp1.datapoint_result["moment_err"]**2 + mdp2.datapoint_result["moment_err"]**2))]) + "\n")
+                else:
+                    file.write(",".join([str(np.mean(mdp1.sample_rdp.timestamp)),
+                                         str(mdp1.sample_rdp.temperature),
+                                         str(mdp1.sample_rdp.field),
+                                         str(mdp1.datapoint_result["moment_fixed_ctr"]),
+                                         str(mdp1.datapoint_result["moment_fixed_ctr_err"]),
+                                         str(""),
+                                         str(""),
+                                         str(mdp1.datapoint_result["moment"]),
+                                         str(mdp1.datapoint_result["moment_err"]),
+                                         str(""),
+                                         str("")]) + "\n")
                 
         with open(export_filename + ".rw.dat", "w") as file:
             file.write("[Header]\n")
