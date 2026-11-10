@@ -83,6 +83,10 @@ class DatapointInfoWidget(QWidget):
         The label which shows the fitted amplitude of the sample datapoint
     amplitude_bg_lb : QLabel
         The label which shows the fitted amplitude of the background datapoint
+    pos_shift_lb : QLabel
+        The label which shows the position shift of the sample datapoint
+    pos_shift_lb : QLabel
+        The label which shows the position shift of the background datapoint
     drift_sample_lb : QLabel
         The label which shows the fitted drift of the sample datapoint
     drift_bg_lb : QLabel
@@ -154,6 +158,7 @@ class DatapointInfoWidget(QWidget):
         self.amplitude_fixed_lb.setText(str(round(measurment_dp.sample_rdp.amp_fixed, 3)) + " V")
         self.amplitude_free_lb.setText(str(round(measurment_dp.sample_rdp.amp_free, 3)) + " V")
         self.amplitude_sample_lb.setText(formatter(measurment_dp.sample_result["fit_coeff"][0]) + " V")
+        self.pos_shift_lb.setText(str(round(measurment_dp.sample_rdp.pos_shift, 2)) + " mm")
         self.drift_sample_lb.setText(formatter(measurment_dp.sample_result["fit_coeff"][2]) + " V/mm")
         self.y_offset_sample_lb.setText(formatter(measurment_dp.sample_result["fit_coeff"][1]) + " V")
         self.x_offset_sample_lb.setText(formatter(measurment_dp.sample_result["fit_coeff"][3]) + " mm")
@@ -173,6 +178,7 @@ class DatapointInfoWidget(QWidget):
             self.amplitude_fixed_2_lb.setText(str(round(measurment_dp.background_rdp.amp_fixed, 3)) + " V")
             self.amplitude_free_2_lb.setText(str(round(measurment_dp.background_rdp.amp_free, 3)) + " V")
             self.amplitude_bg_lb.setText(formatter(measurment_dp.background_result["fit_coeff"][0]) + " V")
+            self.pos_shift_2_lb.setText(str(round(measurment_dp.background_rdp.pos_shift, 2)) + " mm")
             self.drift_bg_lb.setText(formatter(measurment_dp.background_result["fit_coeff"][2]) + " V/mm")
             self.y_offset_bg_lb.setText(formatter(measurment_dp.background_result["fit_coeff"][1]) + " V")
             self.x_offset_bg_lb.setText(formatter(measurment_dp.background_result["fit_coeff"][3]) + " mm")

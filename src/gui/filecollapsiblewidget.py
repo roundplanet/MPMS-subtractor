@@ -218,12 +218,19 @@ class FileCollapsibleWidget(QWidget):
                                      "amp free sample = {} V".format(mdp.sample_result["fit_fixed_ctr_coeff"][0]),
                                      "amp free background = {} V".format(mdp.background_result["fit_fixed_ctr_coeff"][0] if bg else ''),
                                      "amp free subtracted = {} V".format(mdp.datapoint_result["fit_fixed_ctr_coeff"][0] if bg else '')]) + "\n")
-                sample_fixed_c_fitted = gradiometer_function_fixed_center(mdp.sample_result["fixed_ctr"])(
-                    mdp.sample_rdp.raw_position,                                                      
-                    *mdp.sample_result["fit_fixed_ctr_coeff"]
-                )
-                sample_free_c_fitted = gradiometer_function(mdp.sample_rdp.raw_position,
-                                                            *mdp.sample_result["fit_coeff"])
+                sample_fixed_c_fitted = gradiometer_function_fixed_center(
+                    mdp.sample_result["fixed_ctr"],
+                    self.measurement.constants["COIL_RADIUS"],
+                    self.measurement.constants["COIL_DISTANCE"])(
+                        mdp.sample_rdp.raw_position,                                                      
+                        *mdp.sample_result["fit_fixed_ctr_coeff"]
+                    )
+                sample_free_c_fitted = gradiometer_function(
+                    self.measurement.constants["COIL_RADIUS"],
+                    self.measurement.constants["COIL_DISTANCE"])(
+                        mdp.sample_rdp.raw_position,
+                        *mdp.sample_result["fit_coeff"]
+                    )
                 for index in range(len(mdp.sample_rdp.timestamp)):
                     file.write(",".join([str(''),
                                          str(mdp.sample_rdp.timestamp[index]),
@@ -233,12 +240,19 @@ class FileCollapsibleWidget(QWidget):
                                          str(sample_fixed_c_fitted[index]),
                                          str(sample_free_c_fitted[index])]) + ','*10 + '\n')
                 if bg:
-                    background_fixed_c_fitted = gradiometer_function_fixed_center(mdp.background_result["fixed_ctr"])(
-                        mdp.background_rdp.raw_position,                                                      
-                        *mdp.background_result["fit_fixed_ctr_coeff"]
-                    )
-                    background_free_c_fitted = gradiometer_function(mdp.background_rdp.raw_position,
-                                                                    *mdp.background_result["fit_coeff"])
+                    background_fixed_c_fitted = gradiometer_function_fixed_center(
+                        mdp.background_result["fixed_ctr"],
+                        self.measurement.constants["COIL_RADIUS"],
+                        self.measurement.constants["COIL_DISTANCE"])(
+                            mdp.background_rdp.raw_position,                                                      
+                            *mdp.background_result["fit_fixed_ctr_coeff"]
+                        )
+                    background_free_c_fitted = gradiometer_function(
+                        self.measurement.constants["COIL_RADIUS"],
+                        self.measurement.constants["COIL_DISTANCE"])(
+                            mdp.background_rdp.raw_position,
+                            *mdp.background_result["fit_coeff"]
+                        )
                     for index in range(len(mdp.background_rdp.timestamp)):
                         file.write(","*7 + ",".join([str(mdp.background_rdp.timestamp[index]),
                                                      str(mdp.background_rdp.raw_position[index]),
@@ -248,12 +262,19 @@ class FileCollapsibleWidget(QWidget):
                                                      str(background_free_c_fitted[index])]) + ','*4 + "\n")
                     
                     pos_wo_bg, voltage_wo_bg = subtract_background(mdp.sample_rdp, mdp.background_rdp)
-                    subtracted_fixed_c_fitted = gradiometer_function_fixed_center(mdp.datapoint_result["fixed_ctr"])(
-                        pos_wo_bg,                                                      
-                        *mdp.datapoint_result["fit_fixed_ctr_coeff"]
-                    )
-                    subtracted_free_c_fitted = gradiometer_function(pos_wo_bg,
-                                                                    *mdp.datapoint_result["fit_coeff"])
+                    subtracted_fixed_c_fitted = gradiometer_function_fixed_center(
+                        mdp.datapoint_result["fixed_ctr"],
+                        self.measurement.constants["COIL_RADIUS"],
+                        self.measurement.constants["COIL_DISTANCE"])(
+                            pos_wo_bg,                                                      
+                            *mdp.datapoint_result["fit_fixed_ctr_coeff"]
+                        )   
+                    subtracted_free_c_fitted = gradiometer_function(
+                        self.measurement.constants["COIL_RADIUS"],
+                        self.measurement.constants["COIL_DISTANCE"])(
+                            pos_wo_bg,
+                            *mdp.datapoint_result["fit_coeff"]
+                        )
                     for index in range(len(pos_wo_bg)):
                         file.write(","*13 + ",".join([str(pos_wo_bg[index]),
                                                       str(voltage_wo_bg[index]),

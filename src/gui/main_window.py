@@ -92,6 +92,8 @@ class MainWindow(QMainWindow):
             for sample_filename in open_measurement_dialog.sample_filenames:
                 self.add_measurement(sample_filename,
                                      open_measurement_dialog.background_filename,
+                                     open_measurement_dialog.constants_filename,
+                                     open_measurement_dialog.device_cb.currentText(),
                                      open_measurement_dialog.direct_mapping_cb.isChecked())
         
     def convert_measurement_from_scan(self):
@@ -104,8 +106,8 @@ class MainWindow(QMainWindow):
         if convert_he3_raw_data_dialog.exec():
             convert_he3_raw_data_dialog.convert()
     
-    def add_measurement(self, sample_filename, background_filename, direct_mapping = True):
-        measurement = self.measurements.add(sample_filename, background_filename, direct_mapping)
+    def add_measurement(self, sample_filename, background_filename, constants_filename, device, direct_mapping = True):
+        measurement = self.measurements.add(sample_filename, background_filename, constants_filename, device, direct_mapping)
         
         collapsible = FileCollapsibleWidget(measurement)
         self._file_list.layout().addWidget(collapsible)

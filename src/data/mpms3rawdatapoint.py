@@ -7,7 +7,9 @@ Created on Mon May 12 11:02:29 2025
 import numpy as np
 from numpy.polynomial.polynomial import Polynomial as poly
 
-class RawDataPoint():
+from .abstractrawdatapoint import AbstractRawDataPoint
+
+class MPMS3RawDataPoint(AbstractRawDataPoint):
     """
     A class to represent a datapoint in a raw file.
     
@@ -68,8 +70,10 @@ class RawDataPoint():
     """
     
     def __init__(self, info_str : str, data_list : list[str]) -> None:
+        super().__init__("MPMS3")
         self.jump_corrected : bool = False
         self.scan_direction : str = "up"
+        self.pos_shift : float = 0.0
         
         self.__convert_info_string__(info_str)
         self.__convert_data_list__(data_list)
@@ -220,7 +224,7 @@ class RawDataPoint():
             The raw positions of the scan.
 
         '''
-        return self.data[:, 1]
+        return self.data[:, 1] + self.pos_shift
     
     @property
     def raw_voltage(self) -> np.ndarray:

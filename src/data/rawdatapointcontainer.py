@@ -4,7 +4,14 @@ Created on Mon May 12 13:36:39 2025
 
 @author: kaisjuli
 """
-from .rawdatapoint import RawDataPoint
+from __future__ import annotations
+from typing import TYPE_CHECKING
+if TYPE_CHECKING:
+    from .abstractrawdatapoint import AbstractRawDataPoint
+    from numpy import array
+    
+from .mpms3rawdatapoint import MPMS3RawDataPoint
+from .mpmsrawdatapoint import MPMSRawDataPoint
     
 class RawDataPointContainer():
     """
@@ -21,17 +28,17 @@ class RawDataPointContainer():
     """
     
     def __init__(self) -> None:
-        self.container : list[RawDataPoint] = []
+        self.container : list[AbstractRawDataPoint] = []
         
-    def add(self, info_str : str, data_list : list[str]) -> None:
+    def add(self, info : str | dict[str, float], data : list[str] | array, device : str) -> None:
         '''
         Creates a new RawDataPoint and adds it to the container.
 
         Parameters
         ----------
-        info_str : str
+        info : str | None
             The secondary information about the datapoint in the raw file.
-        data_list : list[str]
+        data : list[str] | array
             The measured data of the scan.
 
         Returns
@@ -39,9 +46,12 @@ class RawDataPointContainer():
         None.
 
         '''
-        self.container.append(RawDataPoint(info_str, data_list))
+        if device == "MPMS3":
+            self.container.append(MPMS3RawDataPoint(info, data))
+        elif device == "MPMS":
+            self.container.append(MPMSRawDataPoint(info, data))
         
-    def remove(self, rawdatapoint : RawDataPoint) -> None:
+    def remove(self, rawdatapoint : AbstractRawDataPoint) -> None:
         '''
         Removes an existing RawDataPoint from the container.
 
@@ -57,7 +67,7 @@ class RawDataPointContainer():
         '''
         self.container.remove(rawdatapoint)
         
-    def __getitem__(self, index) -> RawDataPoint:
+    def __getitem__(self, index) -> AbstractRawDataPoint:
         '''
         Gets the datapoint from the container at the desired position.
 

@@ -24,7 +24,7 @@ class MeasurementContainer():
         self.container : list[Measurement] = []
         
     def add(self, sample_filename : str, background_filename : None | str, 
-            direct_mapping : bool = True) -> Measurement:
+            constants_filename : str, device : str, direct_mapping : bool = True) -> Measurement:
         '''
         Creates a new measurement and adds it to the container.
 
@@ -43,7 +43,8 @@ class MeasurementContainer():
             The created measurement.
 
         '''
-        measurement : Measurement = Measurement(sample_filename, background_filename, direct_mapping)
+        measurement : Measurement = Measurement(sample_filename, background_filename,
+                                                constants_filename, device, direct_mapping)
         self.container.append(measurement)
         return measurement
         

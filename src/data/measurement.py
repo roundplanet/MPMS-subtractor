@@ -8,11 +8,12 @@ from __future__ import annotations
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from .measurementdatapoint import MeasurementDataPoint
-    from .rawdatapoint import RawDataPoint
+    from .abstractrawdatapoint import AbstractRawDataPoint
     
 import numpy as np
 
-from .rawdatafile import RawDataFile    
+from .mpms3rawdatafile import MPMS3RawDataFile
+from .mpmsrawdatafile import MPMSRawDataFile    
 from .measurementdatapointcontainer import MeasurementDataPointContainer
 
 class Measurement():
@@ -72,11 +73,15 @@ class Measurement():
     def __init__(self, 
                  sample_filename : str | None = None,
                  background_filename : str | None = None,
+                 constants_filename : str | None = None,
+                 device : str = "MPMS3",
                  direct_mapping : bool = True
         ) -> None:
         
+        self.device : str = device
         self.__set_sample_rdf__(sample_filename)
         self.__set_background_rdf__(background_filename)
+        self.__set_constants__(constants_filename)
         self.__create_measurement_datapoints__(direct_mapping)
         
     def __set_sample_rdf__(self, sample_filename : str) -> None:
@@ -94,10 +99,13 @@ class Measurement():
 
         '''
         if sample_filename is not None:
-            self.sample_rdf : RawDataFile | None = RawDataFile(sample_filename)
+            if self.device == "MPMS3":
+                self.sample_rdf : MPMS3RawDataFile | None = MPMS3RawDataFile(sample_filename)
+            elif self.device == "MPMS":
+                self.sample_rdf : MPMSRawDataFile | None = MPMSRawDataFile(sample_filename)
             self.name : str = sample_filename.split("/")[-1]
         else:
-            self.sample_rdf : RawDataFile | None = None
+            self.sample_rdf : MPMS3RawDataFile | MPMSRawDataFile | None = None
             self.name : str = ''
             
     def __set_background_rdf__(self, background_filename : str) -> None:
@@ -115,9 +123,20 @@ class Measurement():
 
         '''
         if background_filename is not None:
-            self.background_rdf : RawDataFile | None = RawDataFile(background_filename)
+            if self.device == "MPMS3":
+                self.background_rdf : MPMS3RawDataFile | None = MPMS3RawDataFile(background_filename)
+            elif self.device == "MPMS":
+                self.background_rdf : MPMSRawDataFile | None = MPMSRawDataFile(background_filename)
         else:
-            self.background_rdf : RawDataFile | None = None
+            self.background_rdf : MPMS3RawDataFile | MPMSRawDataFile | None = None
+            
+    def __set_constants__(self, constants_filename : str) -> None:
+        self.constants = {}
+        with open(constants_filename) as f:
+            for line in f:
+                if line.strip():
+                    name, value = line.strip().split(",", 1)
+                    self.constants[name] = float(value)
         
     def __create_measurement_datapoints__(self, direct_mapping : bool) -> None:
         '''
@@ -146,10 +165,10 @@ class Measurement():
                 for s, b in zip(self.sample_rdf, self.background_rdf):
                     try:
                         if abs(s.temperature - b.temperature) > 0.25 or abs(s.field - b.field) > 2:
-                            print(abs(s.temperature - b.temperature), abs(s.field - b.field))
+                            #print(abs(s.temperature - b.temperature), abs(s.field - b.field))
                             self.nr_not_matching_datapoints += 1
                         else:
-                            self.datapoints.add(s, b)
+                            self.datapoints.add(s, b, self.constants)
                     except ValueError as err:
                         print(s.raw_voltage)
                         print(b.raw_voltage)
@@ -157,14 +176,14 @@ class Measurement():
                         raise err
             elif self.sample_rdf is not None:
                 for s in self.sample_rdf:
-                    self.datapoints.add(s, None)
+                    self.datapoints.add(s, None, self.constants)
             else:
                 for b in self.background_rdf:
-                    self.datapoints.add(None, b)
+                    self.datapoints.add(None, b, self.constants)
         else:
             if (self.sample_rdf is not None) and (self.background_rdf is not None):
-                max_temp_diff = 0.1
-                max_field_diff = 10
+                max_temp_diff = 0.25
+                max_field_diff = 2
                 for s in self.sample_rdf:
                     bg = None
                     for b in self.background_rdf:
@@ -181,13 +200,13 @@ class Measurement():
                                 if sum_2 < sum_1:
                                     bg = b
                     if bg is None:
-                        print(s.temperature, s.field)
+                        #print(s.temperature, s.field)
                         self.nr_not_matching_datapoints += 1
                     else:
-                        self.datapoints.add(s, bg)
+                        self.datapoints.add(s, bg, self.constants)
             else:
                 for s in self.sample_rdf:
-                    self.datapoints.add(s, None)
+                    self.datapoints.add(s, None, self.constants)
                     
     def datapoint_subset(self, index_map : np.ndarray) -> list[MeasurementDataPoint]:
         '''
@@ -722,7 +741,7 @@ class Measurement():
         else:
             return self.datapoint_subset(index_map)[np.argmin(np.sqrt(x_diff + M_diff))]
     
-    def get_closest_bg_datapoint(self, temp : float, field : float) -> RawDataPoint:
+    def get_closest_bg_datapoint(self, temp : float, field : float) -> AbstractRawDataPoint:
         '''
         Gets the closest datapoint to the given temperature and field.
 
@@ -735,7 +754,7 @@ class Measurement():
 
         Returns
         -------
-        RawDataPoint
+        AbstractRawDataPoint
             The closest datapoint to the given tuple.
 
         '''

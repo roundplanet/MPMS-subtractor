@@ -8,7 +8,8 @@ Created on Wed May 14 08:39:27 2025
 from __future__ import annotations
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from .rawdatapoint import RawDataPoint
+    from .abstractrawdatapoint import AbstractRawDataPoint
+    from .measurement import Measurement
     
 from .measurementdatapoint import MeasurementDataPoint
     
@@ -29,7 +30,7 @@ class MeasurementDataPointContainer():
     def __init__(self) -> None:
         self.container : list[MeasurementDataPoint] = []
         
-    def add(self, sample_rdp : RawDataPoint, background_rdp : RawDataPoint) -> None:
+    def add(self, sample_rdp : AbstractRawDataPoint, background_rdp : AbstractRawDataPoint, constants : dict[str, float]) -> None:
         '''
         Creates a new MeasurementDataPoint and adds it to the container, if fitting
         is possible.
@@ -47,7 +48,7 @@ class MeasurementDataPointContainer():
 
         '''
         try:
-            self.container.append(MeasurementDataPoint(sample_rdp, background_rdp))
+            self.container.append(MeasurementDataPoint(sample_rdp, background_rdp, constants))
         except RuntimeError:
             print("fitting not possible")
             pass

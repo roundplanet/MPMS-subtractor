@@ -7,11 +7,11 @@ Created on Mon May 12 16:25:08 2025
 from __future__ import annotations
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from ..data import RawDataPoint
+    from ..data import AbstractRawDataPoint
     
 import numpy as np
 
-def subtract_background(sample_rdp : RawDataPoint, background_rdp : RawDataPoint) -> tuple(np.ndarray, np.ndarray):
+def subtract_background(sample_rdp : AbstractRawDataPoint, background_rdp : AbstractRawDataPoint) -> tuple(np.ndarray, np.ndarray):
     '''
     Subtracts the background signal from a raw datapoint. The positions of the moment are interpolated
     between the maximum shared boundaries.

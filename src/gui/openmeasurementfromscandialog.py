@@ -67,6 +67,7 @@ class ConvertMeasurementFromScanDialog(QDialog):
 
         for data_chunk in data_chunks:
             timestamp = data_chunk[2, 0]
+            print(timestamp)
             _, temp, field, range_ = logdata[np.argmin(np.abs(logdata[:, 0] - timestamp)), :]
             s = ";low temp = {} K;high temp = {} K;avg. temp = {} K;low field = {} Oe;high field = {} Oe;drift = 0 V/s;slope = 0 V/mm;squid range = {};given center = {} mm;calculated center = {} mm;amp fixed = 0 V;amp free = 0 V\n"
             lines.append(s.format(temp,

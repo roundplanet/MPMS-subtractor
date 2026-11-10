@@ -7,7 +7,7 @@ Created on Wed May 14 08:28:34 2025
 from __future__ import annotations
 from typing import TYPE_CHECKING
 if TYPE_CHECKING:
-    from .rawdatapoint import RawDataPoint
+    from .abstractrawdatapoint import AbstractRawDataPoint
     
 import numpy as np
     
@@ -54,12 +54,14 @@ class MeasurementDataPoint():
     """
     
     def __init__(self, 
-                 sample_rdp : RawDataPoint | None = None,
-                 background_rdp : RawDataPoint | None = None
+                 sample_rdp : AbstractRawDataPoint | None = None,
+                 background_rdp : AbstractRawDataPoint | None = None,
+                 constants : dict[str, float] = None
         ) -> None:
         
-        self.sample_rdp : RawDataPoint | None = sample_rdp
-        self.background_rdp : RawDataPoint | None = background_rdp
+        self.sample_rdp : AbstractRawDataPoint | None = sample_rdp
+        self.background_rdp : AbstractRawDataPoint | None = background_rdp
+        self.constants : dict[str, float] | None = constants 
         self.fitting_was_possible : bool = True
         
         # TODO: check for compatibility 
@@ -140,17 +142,17 @@ class MeasurementDataPoint():
             save_dict["fixed_ctr"] : float = fixed_ctr
             save_dict["p0"] : list[float] = [0, np.mean(voltage), 0, fixed_ctr]
             #try:
-            res : list[np.ndarray] = fit_signal(pos, voltage, save_dict["p0"])
-            save_dict["moment"] : float = convert_amplitude_to_moment(res[0][0])
-            save_dict["moment_err"] : float = abs(convert_amplitude_to_moment(np.sqrt(np.diag(res[1]))[0]))
+            res : list[np.ndarray] = fit_signal(pos, voltage, self.constants, save_dict["p0"])
+            save_dict["moment"] : float = convert_amplitude_to_moment(res[0][0], self.constants)
+            save_dict["moment_err"] : float = abs(convert_amplitude_to_moment(np.sqrt(np.diag(res[1]))[0], self.constants))
             save_dict["fit_coeff"] : np.ndarray = res[0]
             save_dict["fit_err"] : np.ndarray = res[1]
             #except RuntimeError:
             #    self.fitting_was_possible = False
             #try:
-            res : list[np.ndarray] = fit_signal(pos, voltage, save_dict["p0"][:3], True, fixed_ctr)
-            save_dict["moment_fixed_ctr"] : float = convert_amplitude_to_moment(res[0][0])
-            save_dict["moment_fixed_ctr_err"] : float = abs(convert_amplitude_to_moment(np.sqrt(np.diag(res[1]))[0]))
+            res : list[np.ndarray] = fit_signal(pos, voltage, self.constants, save_dict["p0"][:3], True, fixed_ctr)
+            save_dict["moment_fixed_ctr"] : float = convert_amplitude_to_moment(res[0][0], self.constants)
+            save_dict["moment_fixed_ctr_err"] : float = abs(convert_amplitude_to_moment(np.sqrt(np.diag(res[1]))[0], self.constants))
             save_dict["fit_fixed_ctr_coeff"] : np.ndarray = res[0]
             save_dict["fit_fixed_ctr_err"] : np.ndarray = res[1]
             #except RuntimeError:

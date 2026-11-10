@@ -4,10 +4,10 @@ Created on Mon May 12 12:14:16 2025
 
 @author: kaisjuli
 """
-from .rawdatapoint import RawDataPoint
+from .mpms3rawdatapoint import MPMS3RawDataPoint
 from .rawdatapointcontainer import RawDataPointContainer
 
-class RawDataFile():
+class MPMS3RawDataFile():
     """
     A class to represent a raw datafile.
     
@@ -72,7 +72,7 @@ class RawDataFile():
                 if data_flag:
                     if line[0] == ";":
                         if data_info_buffer != "":
-                            self.datapoints.add(data_info_buffer, data_buffer)
+                            self.datapoints.add(data_info_buffer, data_buffer, "MPMS3")
                             data_buffer : list[list[str]] = []
                         data_info_buffer : str = line
                     elif line[0] == ",":
@@ -80,7 +80,7 @@ class RawDataFile():
                             res : list[str] = line[:-1].split(",")[1:]
                             if res[1] != '':
                                 data_buffer.append(res)
-            self.datapoints.add(data_info_buffer, data_buffer)
+            self.datapoints.add(data_info_buffer, data_buffer, "MPMS3")
             self.__convert_info_buffer__(info_buffer)
             
     def __convert_info_buffer__(self, info_buffer : list[str]) -> None:
@@ -135,6 +135,11 @@ class RawDataFile():
         self.sample_density : float | None = get_info_element(info_buffer, "SAMPLE_DENSITY")
         self.sample_molar_mass : float | None = get_info_element(info_buffer, "SAMPLE_MOLAR_MASS")
         
+        pos_shift_cache : float | None = get_info_element(info_buffer, "POS_SHIFT")
+        self.pos_shift : float = float(pos_shift_cache) if pos_shift_cache is not None else 0.0
+        for d in self.datapoints:
+            d.pos_shift = self.pos_shift
+        
     def print_sample_info(self) -> None:
         s : str = "Sample infos:\n"
         s += "material = {}\n".format(self.sample_material)
@@ -148,7 +153,7 @@ class RawDataFile():
         s += "holder detail = {}\n".format(self.sample_holder_detail)
         s += "offset = {}\n".format(self.sample_offset)
         s += "density = {}\n".format(self.sample_density)
-        s += "molar mass = {}\m".format(self.sample_molar_mass)
+        s += "molar mass = {}\n".format(self.sample_molar_mass)
         print(s)
             
     def modify_line_in_file(self, search_text : str, replace_text : str) -> None:
@@ -222,7 +227,7 @@ class RawDataFile():
         self.sample_molar_mass : float = new_sample_molar_mass
         self.modify_line_in_file("SAMPLE_MOLAR_MASS", "INFO,{:.3f},SAMPLE_MOLAR_MASS\n".format(new_sample_molar_mass))
         
-    def __getitem__(self, index : int) -> RawDataPoint:
+    def __getitem__(self, index : int) -> MPMS3RawDataPoint:
         '''
         Gets the datapoint from the container at the desired position.
 
@@ -233,7 +238,7 @@ class RawDataFile():
 
         Returns
         -------
-        RawDataPoint
+        MPMS3RawDataPoint
             The raw datapoint at the specified position.
 
         '''

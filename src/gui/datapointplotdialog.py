@@ -196,14 +196,21 @@ class DatapointPlotDialog(QDialog):
         if self.sample_fit_cb.isChecked():
             if self.parent.center_mode == "free":
                 self.axes[direction].plot(datapoint.sample_rdp.raw_position,
-                                          gradiometer_function(datapoint.sample_rdp.raw_position,
-                                                               *datapoint.sample_result["fit_coeff"]),
+                                          gradiometer_function(
+                                              self.measurement.constants["COIL_RADIUS"],
+                                              self.measurement.constants["COIL_DISTANCE"])(
+                                                  datapoint.sample_rdp.raw_position,
+                                                  *datapoint.sample_result["fit_coeff"]
+                                                  ),
                                           color="darkgreen")
             else:
                 self.axes[direction].plot(datapoint.sample_rdp.raw_position,
-                                          gradiometer_function_fixed_center(datapoint.sample_result["fixed_ctr"])(
-                                              datapoint.sample_rdp.raw_position,                                                      
-                                              *datapoint.sample_result["fit_fixed_ctr_coeff"]),
+                                          gradiometer_function_fixed_center(
+                                              datapoint.sample_result["fixed_ctr"],
+                                              self.measurement.constants["COIL_RADIUS"],
+                                              self.measurement.constants["COIL_DISTANCE"])(
+                                                  datapoint.sample_rdp.raw_position,                                                      
+                                                  *datapoint.sample_result["fit_fixed_ctr_coeff"]),
                                           color="darkgreen")
         if datapoint.background_rdp is not None:
             if self.background_cb.isChecked():
@@ -213,14 +220,21 @@ class DatapointPlotDialog(QDialog):
             if self.background_fit_cb.isChecked():
                 if self.parent.center_mode == "free":
                     self.axes[direction].plot(datapoint.background_rdp.raw_position,
-                                              gradiometer_function(datapoint.background_rdp.raw_position,
-                                                                   *datapoint.background_result["fit_coeff"]),
+                                              gradiometer_function(
+                                                  self.measurement.constants["COIL_RADIUS"],
+                                                  self.measurement.constants["COIL_DISTANCE"])(
+                                                      datapoint.background_rdp.raw_position,
+                                                      *datapoint.background_result["fit_coeff"]
+                                                      ),
                                               color="crimson")
                 else:
                     self.axes[direction].plot(datapoint.background_rdp.raw_position,
-                                              gradiometer_function_fixed_center(datapoint.background_result["fixed_ctr"])(
-                                                  datapoint.background_rdp.raw_position,                                                      
-                                                  *datapoint.background_result["fit_fixed_ctr_coeff"]),
+                                              gradiometer_function_fixed_center(
+                                                  datapoint.background_result["fixed_ctr"],
+                                                  self.measurement.constants["COIL_RADIUS"],
+                                                  self.measurement.constants["COIL_DISTANCE"])(
+                                                      datapoint.background_rdp.raw_position,                                                      
+                                                      *datapoint.background_result["fit_fixed_ctr_coeff"]),
                                               color="crimson")
                 
             if self.sample_wo_background_cb.isChecked():
@@ -230,12 +244,19 @@ class DatapointPlotDialog(QDialog):
             if self.sample_wo_background_fit_cb.isChecked():
                 if self.parent.center_mode == "free":
                     self.axes[direction].plot(datapoint.sample_rdp.raw_position,
-                                              gradiometer_function(datapoint.sample_rdp.raw_position,
-                                                                   *datapoint.datapoint_result["fit_coeff"]),
+                                              gradiometer_function(
+                                                  self.measurement.constants["COIL_RADIUS"],
+                                                  self.measurement.constants["COIL_DISTANCE"])(
+                                                      datapoint.sample_rdp.raw_position,
+                                                      *datapoint.datapoint_result["fit_coeff"]
+                                                      ),
                                               color="navy")
                 else:
                     self.axes[direction].plot(datapoint.sample_rdp.raw_position,
-                                              gradiometer_function_fixed_center(datapoint.datapoint_result["fixed_ctr"])(
+                                              gradiometer_function_fixed_center(
+                                                  datapoint.datapoint_result["fixed_ctr"],
+                                                  self.measurement.constants["COIL_RADIUS"],
+                                                  self.measurement.constants["COIL_DISTANCE"])(
                                                   datapoint.sample_rdp.raw_position,                                                      
                                                   *datapoint.datapoint_result["fit_fixed_ctr_coeff"]),
                                               color="navy")
@@ -410,14 +431,21 @@ class DatapointPlotDialog(QDialog):
         final_string = ""
         if self.parent.center_mode == "free":
             for x, y in zip(dp.sample_rdp.raw_position,
-                            gradiometer_function(dp.sample_rdp.raw_position,
-                                                 *dp.sample_result["fit_coeff"])):
+                            gradiometer_function(
+                                self.measurement.constants["COIL_RADIUS"],
+                                self.measurement.constants["COIL_DISTANCE"])(
+                                    dp.sample_rdp.raw_position,
+                                    *dp.sample_result["fit_coeff"])
+                            ):
                 final_string += "{}\t{}\n".format(x, y)
         else:
             for x, y in zip(dp.sample_rdp.raw_position,
-                            gradiometer_function_fixed_center(dp.sample_result["fixed_ctr"])(
-                                dp.sample_rdp.raw_position,
-                                *dp.sample_result["fit_coeff"])
+                            gradiometer_function_fixed_center(
+                                dp.sample_result["fixed_ctr"],
+                                self.measurement.constants["COIL_RADIUS"],
+                                self.measurement.constants["COIL_DISTANCE"])(
+                                    dp.sample_rdp.raw_position,
+                                    *dp.sample_result["fit_coeff"])
                             ):
                 final_string += "{}\t{}\n".format(x, y)
         pyperclip.copy(final_string)
@@ -435,14 +463,21 @@ class DatapointPlotDialog(QDialog):
         final_string = ""
         if self.parent.center_mode == "free":
             for x, y in zip(dp.background_rdp.raw_position,
-                            gradiometer_function(dp.background_rdp.raw_position,
-                                                 *dp.background_result["fit_coeff"])):
+                            gradiometer_function(
+                                self.measurement.constants["COIL_RADIUS"],
+                                self.measurement.constants["COIL_DISTANCE"])(
+                                    dp.background_rdp.raw_position,
+                                    *dp.background_result["fit_coeff"])
+                                ):
                 final_string += "{}\t{}\n".format(x, y)
         else:
             for x, y in zip(dp.background_rdp.raw_position,
-                            gradiometer_function_fixed_center(dp.background_result["fixed_ctr"])(
-                                dp.background_rdp.raw_position,
-                                *dp.background_result["fit_coeff"])
+                            gradiometer_function_fixed_center(
+                                dp.background_result["fixed_ctr"],
+                                self.measurement.constants["COIL_RADIUS"],
+                                self.measurement.constants["COIL_DISTANCE"])(
+                                    dp.background_rdp.raw_position,
+                                    *dp.background_result["fit_coeff"])
                             ):
                 final_string += "{}\t{}\n".format(x, y)
         pyperclip.copy(final_string)
@@ -459,14 +494,21 @@ class DatapointPlotDialog(QDialog):
         final_string = ""
         if self.parent.center_mode == "free":
             for x, y in zip(dp.sample_rdp.raw_position,
-                            gradiometer_function(dp.sample_rdp.raw_position,
-                                                 *dp.datapoint_result["fit_coeff"])):
+                            gradiometer_function(
+                                self.measurement.constants["COIL_RADIUS"],
+                                self.measurement.constants["COIL_DISTANCE"])(
+                                    dp.sample_rdp.raw_position,
+                                    *dp.datapoint_result["fit_coeff"])
+                            ):
                 final_string += "{}\t{}\n".format(x, y)
         else:
             for x, y in zip(dp.sample_rdp.raw_position,
-                            gradiometer_function_fixed_center(dp.datapoint_result["fixed_ctr"])(
-                                dp.sample_rdp.raw_position,                                                      
-                                *dp.datapoint_result["fit_fixed_ctr_coeff"])
+                            gradiometer_function_fixed_center(
+                                dp.datapoint_result["fixed_ctr"],
+                                self.measurement.constants["COIL_RADIUS"],
+                                self.measurement.constants["COIL_DISTANCE"])(
+                                    dp.sample_rdp.raw_position,                                                      
+                                    *dp.datapoint_result["fit_fixed_ctr_coeff"])
                             ):
                 final_string += "{}\t{}\n".format(x, y)
         pyperclip.copy(final_string)
