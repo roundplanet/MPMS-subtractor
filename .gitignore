@@ -25,6 +25,7 @@ htmlcov/
 # IDEs and editors
 .idea/
 .vscode/
+.spyproject/
 
 # Environment variables and secrets
 .env
